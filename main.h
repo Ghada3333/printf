@@ -1,125 +1,98 @@
-#ifndef MAIN_H
-#define MAIN_H
+#ifndef MAINHEADER_H_
+#define MAINHEADER_H_
+
 #include <stdarg.h>
-#include <stdio.h>
 #include <unistd.h>
-#define UNUSED(x) (void)(x)
-#define BUFF_SIZE 1024
-#define F_MINUS 1
-#define F_PLUS 2
-#define F_ZERO 4
-#define F_HASH 8
-#define F_SPACE 16
-#define S_LONG 2
-#define S_SHORT 1
+#include <stdlib.h>
 
 /**
- * struct print_format - Struct op.
- * @format_char: Formating char.
- * @fn: Given function
+ * struct print - struct for printer functions
+ * @type_arg: identifier
+ * @f: pointer to a printer functions
+ * Description: struct that stores pointers to a
+ * printer functions.
  */
-struct print_format
+typedef struct print
 {
-	char format_char;
-	int (*fn)(va_list, char[], int, int, int, int);
-};
+	char *type_arg;
 
-/**
- * typedef struct print_format format_type - Struct op
- * @print_format: The format.
- * @format_type: The function associated.
- */
-typedef struct print_format format_type;
+	int (*f)(va_list, char *, unsigned int);
+} print_t;
 
 int _printf(const char *format, ...);
 
-int handle_print(const char *fmt, int *i,
-		va_list list, char buffer[], int flags, int width, int precision, int size);
+int print_prg(va_list __attribute__((unused)), char *, unsigned int);
 
-/* print chars and strings */
-int print_char(va_list types, char buffer[],
-		int flags, int width, int precision, int size);
+int print_chr(va_list arguments, char *buf, unsigned int ibuf);
 
-int print_string(va_list types, char buffer[],
-		int flags, int width, int precision, int size);
+int print_str(va_list arguments, char *buf, unsigned int ibuf);
 
-int print_percent(va_list types, char buffer[],
-		int flags, int width, int precision, int size);
+int print_int(va_list arguments, char *buf, unsigned int ibuf);
 
-/* print numbers */
-int print_int(va_list types, char buffer[],
-		int flags, int width, int precision, int size);
+int print_bnr(va_list arguments, char *buf, unsigned int ibuf);
 
-int print_binary(va_list types, char buffer[],
-		int flags, int width, int precision, int size);
+int print_unt(va_list arguments, char *buf, unsigned int ibuf);
 
-int print_unsigned(va_list types, char buffer[],
-		int flags, int width, int precision, int size);
+int print_oct(va_list arguments, char *buf, unsigned int ibuf);
 
-int print_octal(va_list types, char buffer[],
-		int flags, int width, int precision, int size);
+int print_hex(va_list arguments, char *buf, unsigned int ibuf);
 
-int print_hexadecimal(va_list types, char buffer[],
-		int flags, int width, int precision, int size);
+int print_upx(va_list arguments, char *buf, unsigned int ibuf);
 
-int print_hexa_upper(va_list types, char buffer[],
-		int flags, int width, int precision, int size);
+int print_usr(va_list arguments, char *buf, unsigned int ibuf);
 
-int print_hexa(va_list types, char map_to[],
-		char buffer[], int flags, char flag_ch, int width, int precision, int size);
+int print_add(va_list arguments, char *buf, unsigned int ibuf);
 
-/* print non-printable characters */
-int print_non_printable(va_list types, char buffer[],
-		int flags, int width, int precision, int size);
+int print_rev(va_list arguments, char *buf, unsigned int ibuf);
 
-/* print memory address */
-int print_pointer(va_list types, char buffer[],
-		int flags, int width, int precision, int size);
+int print_rot(va_list arguments, char *buf, unsigned int ibuf);
 
-/* handle other specifiers */
-int get_flags(const char *format, int *i);
+int prinlint(va_list arguments, char *buf, unsigned int ibuf);
 
-int get_width(const char *format, int *i, va_list list);
+int prinlunt(va_list arguments, char *buf, unsigned int ibuf);
 
-int get_precision(const char *format, int *i, va_list list);
+int prinloct(va_list arguments, char *buf, unsigned int ibuf);
 
-int get_size(const char *format, int *i);
+int prinlhex(va_list arguments, char *buf, unsigned int ibuf);
 
-/* print string in reverse*/
-int print_reverse(va_list types, char buffer[],
-		int flags, int width, int precision, int size);
+int prinlupx(va_list arguments, char *buf, unsigned int ibuf);
 
-/* print a string in rot 13*/
-int print_rot13string(va_list types, char buffer[],
-		int flags, int width, int precision, int size);
+int prinhint(va_list arguments, char *buf, unsigned int ibuf);
 
-/* width handler */
-int handle_write_char(char c, char buffer[],
-		int flags, int width, int precision, int size);
+int prinhunt(va_list arguments, char *buf, unsigned int ibuf);
 
-int write_number(int is_positive, int ind, char buffer[],
-		int flags, int width, int precision, int size);
+int prinhoct(va_list arguments, char *buf, unsigned int ibuf);
 
-int write_num(int ind, char bff[], int flags, int width, int precision,
-		int length, char space, char extra_c);
+int prinhhex(va_list arguments, char *buf, unsigned int ibuf);
 
-int write_pointer(char buffer[], int ind, int length,
-		int width, int flags, char space, char extra_c, int space_start);
+int prinhupx(va_list arguments, char *buf, unsigned int ibuf);
 
-int writeUnsigned(int is_negative, int ind,
-		char buffer[],
-		int flags, int width, int precision, int size);
+int prinpint(va_list arguments, char *buf, unsigned int ibuf);
 
-int is_printable(char);
+int prinnoct(va_list arguments, char *buf, unsigned int ibuf);
 
-int append_hexa_code(char, char[], int);
+int prinnhex(va_list arguments, char *buf, unsigned int ibuf);
 
-int is_digit(char);
+int prinnupx(va_list arguments, char *buf, unsigned int ibuf);
 
-long int convert_size_number(long int num, int size);
+int prinsint(va_list arguments, char *buf, unsigned int ibuf);
 
-long int convertSizeUnsigned(unsigned long int num, int size);
+int (*get_print_func(const char *s, int index))(va_list, char *, unsigned int);
 
-void print_buffer_content(char buffer[], int *buff_ind);
+int ev_print_func(const char *s, int index);
+
+unsigned int handl_buf(char *buf, char c, unsigned int ibuf);
+
+int print_buf(char *buf, unsigned int nbuf);
+
+char *fill_binary_array(char *binary, long int int_in, int isneg, int limit);
+
+char *fill_oct_array(char *bnr, char *oct);
+
+char *fill_long_oct_array(char *bnr, char *oct);
+
+char *fill_short_oct_array(char *bnr, char *oct);
+
+char *fill_hex_array(char *bnr, char *hex, int isupp, int limit);
 
 #endif

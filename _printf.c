@@ -1,59 +1,49 @@
 #include "main.h"
-
 /**
- * print_buffer_content - Prints the contents of buffer if found.
- * @buffer: Char array.
- * @buff_ind: Next char index used as length.
- * Return: No value.
- */
-void print_buffer_content(char buffer[], int *buff_ind)
-{
-	if (*buff_ind > 0)
-		write(1, &buffer[0], *buff_ind);
-	*buff_ind = 0;
-}
-
-/**
- * _printf - Printf function.
- * @format: Specified format.
- * Return: Printed chars.
+ * _printf - formatted output conversion and print data.
+ * @format: input string.
+ * Return: number of chars printed.
  */
 int _printf(const char *format, ...)
 {
-	int flags, word_width, sp_precision, word_size, buff_ind = 0;
-	int i = 0, printed_flag = 0, chars_printed = 0;
-	char buffer[BUFF_SIZE];
-	va_list list_ptr;
+	unsigned int i = 0, len = 0, ibuf = 0;
+	va_list arguments;
+	int (*function)(va_list, char *, unsigned int);
+	char *buffer;
 
-	if (format == NULL)
+	va_start(arguments, format), buffer = malloc(sizeof(char) * 1024);
+	if (!format || !buffer || (format[i] == '%' && !format[i + 1]))
 		return (-1);
-	va_start(list_ptr, format);
-
-	while (format && format[i] != '\0')
+	if (!format[i])
+		return (0);
+	for (i = 0; format && format[i]; i++)
 	{
-		if (format[i] != '%')
+		if (format[i] == '%')
 		{
-			buffer[buff_ind++] = format[i];
-			if (buff_ind == BUFF_SIZE)
-				print_buffer_content(buffer, &buff_ind);
-			chars_printed++;
-		} else
-		{
-			print_buffer_content(buffer, &buff_ind);
-			flags = get_flags(format, &i);
-			word_width = get_width(format, &i, list_ptr);
-			sp_precision = get_precision(format, &i, list_ptr);
-			word_size = get_size(format, &i);
-			++i;
-			printed_flag = handle_print(format, &i, list_ptr, buffer, flags,
-					word_width, sp_precision, word_size);
-			if (printed_flag == -1)
+			if (format[i + 1] == '\0')
+			{
+				print_buf(buffer, ibuf), free(buffer), va_end(arguments);
 				return (-1);
-			chars_printed += printed_flag;
+			}
+			function = get_print_func(format, i + 1);
+			if (function == NULL)
+			{
+				if (format[i + 1] == ' ' && !format[i + 2])
+					return (-1);
+				handl_buf(buffer, format[i], ibuf), len++, i--;
+			} else
+			{
+				len += function(arguments, buffer, ibuf);
+				i += ev_print_func(format, i + 1);
+			}
+
+			i++;
 		}
-		i++;
+		else
+			handl_buf(buffer, format[i], ibuf), len++;
+		for (ibuf = len; ibuf > 1024; ibuf -= 1024)
+			;
 	}
-	print_buffer_content(buffer, &buff_ind);
-	va_end(list_ptr);
-	return (chars_printed);
+	print_buf(buffer, ibuf), free(buffer), va_end(arguments);
+	return (len);
 }

@@ -39,3 +39,9 @@ int prinnhex(va_list arguments, char *buf, unsigned int ibuf)
 			ibuf = handl_buf(buf, hexadecimal[i], ibuf);
 			count++;
 		}
+	}
+	free(binary);
+	free(hexadecimal);
+	return (count + 2);
+}
+
